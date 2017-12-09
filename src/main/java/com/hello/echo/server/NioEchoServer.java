@@ -22,7 +22,8 @@ public class NioEchoServer {
         Selector selector = Selector.open();
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        // A version with bug loop forever.
+        //bug:
+        // telnet and type some words. Then close connection from cient, server will goes into dead loop.
         while (true) {
             System.out.println("Before select");
             int evtNumber = selector.select();
@@ -43,7 +44,7 @@ public class NioEchoServer {
                     SocketChannel client = server.accept();
                     System.out.println("Accepted connection from " + client);
                     client.configureBlocking(false);
-                    client.register(selector, SelectionKey.OP_READ|SelectionKey.OP_WRITE,
+                    client.register(selector, SelectionKey.OP_READ,
                             ByteBuffer.allocate(100));
                 }
 
