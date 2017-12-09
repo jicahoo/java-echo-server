@@ -22,7 +22,7 @@ public class NioEchoServer {
         Selector selector = Selector.open();
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        //In this version, if client disconnect the connection, will loop for ever.
+        //A working version without dead loop. But write may be blocking.
         int readableNumber = 0;
         int eventRnd = 0;
         while (true) {
@@ -50,10 +50,12 @@ public class NioEchoServer {
 
                 if (key.isReadable()) {
                     readableNumber++;
-                    System.out.println("\tisReadable: " + readableNumber);
+
+                    System.out.printf("\tisReadable:%d,  \n", readableNumber);
                     SocketChannel channel = (SocketChannel) key.channel();
                     ByteBuffer wordsFromClient = (ByteBuffer) key.attachment();
                     int gotBytes = channel.read(wordsFromClient);
+
                     while(gotBytes > 0) {
                         wordsFromClient.flip();
                         byte[] bytes = new byte[wordsFromClient.remaining()];
@@ -63,16 +65,25 @@ public class NioEchoServer {
                         channel.write(ByteBuffer.wrap(bytes));
                         gotBytes = channel.read(wordsFromClient);
                     }
+
+                    if (gotBytes == -1) {
+                        System.out.println("\t\tGot EOF. Close the socket");
+//                        key.cancel();
+//                        channel.close();
+                        channel.socket().close();
+                        System.out.println("\t\tClosed " + channel);
+                    }
+
                 }
 
-                if (key.isWritable()) {
-                    System.out.println("isWritable");
-                    SocketChannel client = (SocketChannel) key.channel();
-                    ByteBuffer output = (ByteBuffer) key.attachment();
-                    output.flip();
-                    client.write(output);
-                    output.compact();
-                }
+//                if (key.isWritable()) {
+//                    System.out.println("isWritable");
+//                    SocketChannel client = (SocketChannel) key.channel();
+//                    ByteBuffer output = (ByteBuffer) key.attachment();
+//                    output.flip();
+//                    client.write(output);
+//                    output.compact();
+//                }
             }
         }
     }
