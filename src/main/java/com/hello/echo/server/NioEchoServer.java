@@ -22,40 +22,42 @@ public class NioEchoServer {
         Selector selector = Selector.open();
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        //A working version (get client's input and print to stdout) without dead loop.
+        //In this version, if client put more than 10 chars, there will be two round of select() return.
+        //It means it is LT mode. Next step: read all data when received read event.
+        int readableNumber = 0;
+        int eventRnd = 0;
         while (true) {
-            System.out.println("Before select");
             int evtNumber = selector.select();
-            System.out.println("After select");
-            System.out.println("Event number: " + evtNumber);
+            eventRnd++;
+            System.out.printf("Got event count %s at round: %s \n", evtNumber, eventRnd);
 
             Set<SelectionKey> readyKeys = selector.selectedKeys();
             Iterator<SelectionKey> iterator = readyKeys.iterator();
 
             while (iterator.hasNext()) {
-                System.out.println("Has more event.");
                 SelectionKey key = iterator.next();
                 iterator.remove();
 
                 if (key.isAcceptable()) {
-                    System.out.println("isAcceptable.");
+                    System.out.println("\tisAcceptable.");
                     ServerSocketChannel server = (ServerSocketChannel) key.channel();
                     SocketChannel client = server.accept();
-                    System.out.println("Accepted connection from " + client);
+                    System.out.println("\tAccepted connection from " + client);
                     client.configureBlocking(false);
                     client.register(selector, SelectionKey.OP_READ,
-                            ByteBuffer.allocate(100));
+                            ByteBuffer.allocate(10));
                 }
 
                 if (key.isReadable()) {
-                    System.out.println("isReadable");
+                    readableNumber++;
+                    System.out.println("\tisReadable: " + readableNumber);
                     SocketChannel channel = (SocketChannel) key.channel();
                     ByteBuffer wordsFromClient = (ByteBuffer) key.attachment();
                     channel.read(wordsFromClient);
                     wordsFromClient.flip();
                     byte[] bytes = new byte[wordsFromClient.remaining()];
                     wordsFromClient.get(bytes);
-                    System.out.println(new String(bytes));
+                    System.out.println("\t\t" + new String(bytes));
                     wordsFromClient.clear();
                     channel.write(ByteBuffer.wrap(bytes));
                 }
