@@ -22,11 +22,11 @@ public class NioEchoServer {
         Selector selector = Selector.open();
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        //In this version, if client put more than 10 chars, there will be two round of select() return.
-        //It means it is LT mode. Next step: read all data when received read event.
+        //In this version, if client disconnect the connection, will loop for ever.
         int readableNumber = 0;
         int eventRnd = 0;
         while (true) {
+            System.out.println("Start select()");
             int evtNumber = selector.select();
             eventRnd++;
             System.out.printf("Got event count %s at round: %s \n", evtNumber, eventRnd);
@@ -53,13 +53,16 @@ public class NioEchoServer {
                     System.out.println("\tisReadable: " + readableNumber);
                     SocketChannel channel = (SocketChannel) key.channel();
                     ByteBuffer wordsFromClient = (ByteBuffer) key.attachment();
-                    channel.read(wordsFromClient);
-                    wordsFromClient.flip();
-                    byte[] bytes = new byte[wordsFromClient.remaining()];
-                    wordsFromClient.get(bytes);
-                    System.out.println("\t\t" + new String(bytes));
-                    wordsFromClient.clear();
-                    channel.write(ByteBuffer.wrap(bytes));
+                    int gotBytes = channel.read(wordsFromClient);
+                    while(gotBytes > 0) {
+                        wordsFromClient.flip();
+                        byte[] bytes = new byte[wordsFromClient.remaining()];
+                        wordsFromClient.get(bytes);
+                        System.out.println("\t\t" + new String(bytes));
+                        wordsFromClient.clear();
+                        channel.write(ByteBuffer.wrap(bytes));
+                        gotBytes = channel.read(wordsFromClient);
+                    }
                 }
 
                 if (key.isWritable()) {
