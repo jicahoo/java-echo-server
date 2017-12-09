@@ -57,6 +57,7 @@ public class NioEchoServer {
                     wordsFromClient.get(bytes);
                     System.out.println(new String(bytes));
                     wordsFromClient.clear();
+                    channel.write(ByteBuffer.wrap(bytes));
                 }
 
                 if (key.isWritable()) {
