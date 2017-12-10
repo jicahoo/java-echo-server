@@ -29,7 +29,7 @@ public class RealNioEchoServer {
         ByteBuffer buffer = ByteBuffer.allocate(100);
         while (true) {
             System.out.println("Loop");
-            selector.select();
+            selector.select(5000);
             Set<SelectionKey> readyKeys = selector.selectedKeys();
             Iterator<SelectionKey> iterator = readyKeys.iterator();
 
@@ -58,6 +58,7 @@ public class RealNioEchoServer {
                     System.out.printf("\tChannel after read: %s\n", output);
                     client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, buffer);
                     if (rc == -1) {
+                        System.out.printf("\tClosed connection: %s\n", client);
                         client.close();
                     }
                 }
@@ -75,12 +76,11 @@ public class RealNioEchoServer {
                     if (!output.hasRemaining()) {
                         System.out.println("\tAll data are written to channel.");
                         client.register(selector, SelectionKey.OP_READ, buffer);
-                    } else {
-                        client.write(output);
-                        System.out.printf("\tchannel to write after write: %s\n", output);
-                        output.compact();
-                        System.out.printf("\tchannel to write after compact: %s\n", output);
                     }
+                    client.write(output);
+                    System.out.printf("\tchannel to write after write: %s\n", output);
+                    output.compact();
+                    System.out.printf("\tchannel to write after compact: %s\n", output);
 
                 }
             }
