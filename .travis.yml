@@ -6,4 +6,8 @@ matrix:
         - ./gradlew check
         - uname -a
       #after_success: - bash <(curl -s https://codecov.io/bash
+    - language: python
+      python: 2.7
+      script:
+        - python ./tests/python/test-echo-server.py
 
