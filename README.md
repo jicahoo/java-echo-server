@@ -1,5 +1,6 @@
 # java-echo-server
-
+## CI Status
+* [![Build Status](https://travis-ci.org/jicahoo/java-echo-server.svg?branch=master)](https://travis-ci.org/jicahoo/java-echo-server)
 ## Java echo server using NIO
 * NIO is hard to use. Especially, ByteBuffer
 
