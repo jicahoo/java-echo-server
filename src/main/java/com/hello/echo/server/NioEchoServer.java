@@ -41,10 +41,10 @@ public class NioEchoServer {
                 if (key.isAcceptable()) {
                     System.out.println("\tisAcceptable.");
                     ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                    SocketChannel client = server.accept();
-                    System.out.println("\tAccepted connection from " + client);
-                    client.configureBlocking(false);
-                    client.register(selector, SelectionKey.OP_READ,
+                    SocketChannel conn = server.accept();
+                    System.out.println("\tAccepted connection: " + conn);
+                    conn.configureBlocking(false);
+                    conn.register(selector, SelectionKey.OP_READ,
                             ByteBuffer.allocate(10));
                 }
 
