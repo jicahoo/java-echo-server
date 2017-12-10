@@ -13,3 +13,7 @@
 1. In telnet, Empty String
 2. In telnet, input string whose size is bigger than buffer
 3. After some echo, close terminal directly.
+
+## NIO buffer operation
+* flip: limit -> position, position -> 0
+* compact: limit -> capacity, position -> limit - position, [position : (limit-1)] -> [0 : (limit - 1 - position)]

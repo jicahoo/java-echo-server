@@ -29,7 +29,7 @@ public class RealNioEchoServer {
         ByteBuffer buffer = ByteBuffer.allocate(100);
         while (true) {
             System.out.println("Loop");
-            selector.select(5000);
+            selector.select();
             Set<SelectionKey> readyKeys = selector.selectedKeys();
             Iterator<SelectionKey> iterator = readyKeys.iterator();
 
@@ -49,17 +49,20 @@ public class RealNioEchoServer {
                 if (key.isReadable()) {
                     System.out.println("[read]");
                     SocketChannel client = (SocketChannel) key.channel();
-                    ByteBuffer output = (ByteBuffer) key.attachment();
-                    if (output == buffer) {
+                    ByteBuffer readAttach = (ByteBuffer) key.attachment();
+                    if (readAttach == buffer) {
                         System.out.println("\tSame buffer.");
                     }
-                    System.out.printf("\tChannel to read: %s\n", output);
-                    int rc = client.read(output);
-                    System.out.printf("\tChannel after read: %s\n", output);
-                    client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, buffer);
+                    System.out.printf("\tChannel to read: %s\n", readAttach);
+                    // Write data to readAttach buffer.
+                    int rc = client.read(readAttach);
+                    System.out.printf("\tChannel after read: %s\n", readAttach);
                     if (rc == -1) {
                         System.out.printf("\tClosed connection: %s\n", client);
                         client.close();
+                    } else {
+                        //If non-EOF, have to write it back. So register OP_WRITE
+                        client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, buffer);
                     }
                 }
 
@@ -71,14 +74,17 @@ public class RealNioEchoServer {
                         System.out.println("\tSame buffer");
                     }
                     System.out.printf("\tchannel to write: %s\n", output);
+                    //flip in order to read data from the buffer.
                     output.flip();
                     System.out.printf("\tchannel to write after flip: %s\n", output);
                     if (!output.hasRemaining()) {
-                        System.out.println("\tAll data are written to channel.");
+                        System.out.println("\tAll data (so far) are written to channel.");
                         client.register(selector, SelectionKey.OP_READ, buffer);
                     }
                     client.write(output);
                     System.out.printf("\tchannel to write after write: %s\n", output);
+                    //Use compact to clear the data we have read.
+                    //If not call it, we will read old data after flip.
                     output.compact();
                     System.out.printf("\tchannel to write after compact: %s\n", output);
 
