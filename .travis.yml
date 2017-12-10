@@ -9,6 +9,7 @@ matrix:
     - language: python
       python: 2.7
       script:
-        - java -cp ./build/classes/java/main/  com.hello.echo.server.RealNioEchoServer > /dev/null &
+        - java -cp ./build/classes/java/main/  com.hello.echo.server.RealNioEchoServer &
+        - ps -elf |grep RealNioEchoServer
         - python ./tests/python/test-echo-server.py
 
