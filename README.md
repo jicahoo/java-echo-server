@@ -1,7 +1,7 @@
 # java-echo-server
 
 ## Java echo server using NIO
-* NIO is hard to use.
+* NIO is hard to use. Especially, ByteBuffer
 
 ## Quetions
 1. What is attchment?
