@@ -12,6 +12,6 @@ matrix:
       script:
         - java -cp ./build/classes/java/main/  com.hello.echo.server.RealNioEchoServer &
         - ps -elf |grep RealNioEchoServer
-        - netstat -tuanp |grep java
+        - sudo netstat -tuanp |grep java
         - python ./tests/python/test-echo-server.py
 
