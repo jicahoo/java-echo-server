@@ -33,6 +33,8 @@
 ## Errors you will come across
 * "Connection reset by peer"
     1. https://stackoverflow.com/questions/1434451/what-does-connection-reset-by-peer-mean
+* Broken pipe. Check bug #1.
+
 ## Key points
 * How TCP peers start conversation?
 * How TCP peers stop converations?
