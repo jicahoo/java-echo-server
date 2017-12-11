@@ -25,7 +25,7 @@ public class RealNioEchoServer {
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
         //Should not share the buffer among the connected channels. There will be conccurrent issues.
-        ByteBuffer buffer = ByteBuffer.allocate(100);
+        ByteBuffer buffer = ByteBuffer.allocate(8);
         while (true) {
             System.out.println("Loop");
             selector.select();
@@ -49,6 +49,7 @@ public class RealNioEchoServer {
                     System.out.println("[read]");
                     SocketChannel client = (SocketChannel) key.channel();
                     ByteBuffer readAttach = (ByteBuffer) key.attachment();
+
                     if (readAttach == buffer) {
                         System.out.println("\tSame buffer.");
                     }
@@ -57,10 +58,12 @@ public class RealNioEchoServer {
                     int rc = client.read(readAttach);
                     System.out.printf("\tChannel after read: %s\n", readAttach);
                     if (rc == -1) {
+                        //Warning: Some bad client may not send EOF.
                         System.out.printf("\tClosed connection: %s\n", client);
                         client.close();
                     } else {
                         //If non-EOF, have to write it back. So register OP_WRITE
+                        System.out.printf("\tGot bytes count: %d\n", rc);
                         client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE, buffer);
                     }
                 }
