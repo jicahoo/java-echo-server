@@ -12,8 +12,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * TODO: known issues in this vesion
- * 1. In client terminal, before ctrl+], ctrl+D.  Just close terminal, it will run into for-ever loop.
  */
 public class RealNioEchoServer {
     public void server(int port) throws IOException {
@@ -26,6 +24,7 @@ public class RealNioEchoServer {
         Selector selector = Selector.open();
         serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
+        //Should not share the buffer among the connected channels. There will be conccurrent issues.
         ByteBuffer buffer = ByteBuffer.allocate(100);
         while (true) {
             System.out.println("Loop");
