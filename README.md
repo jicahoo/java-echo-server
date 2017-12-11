@@ -33,3 +33,9 @@
 ## Errors you will come across
 * "Connection reset by peer"
     1. https://stackoverflow.com/questions/1434451/what-does-connection-reset-by-peer-mean
+## Key points
+* How TCP peers start conversation?
+* How TCP peers stop converations?
+    1. FIN. "I finished talking to you, but I'll still listen to everything you have to say until you're done"
+    2. RST. "There is no conversation. I am resetting the connection!"
+
