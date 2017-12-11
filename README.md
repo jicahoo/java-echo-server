@@ -29,3 +29,7 @@
 * What is HIGH-PERFORMANCE? 
     1. From client, I can see the result as quick as possible; 
     2. From server, I use resource as less as possible, use less CPU&Memory resource.
+
+## Errors you will come across
+* "Connection reset by peer"
+    1. https://stackoverflow.com/questions/1434451/what-does-connection-reset-by-peer-mean
