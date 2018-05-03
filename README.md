@@ -4,10 +4,13 @@
 ## Java echo server using NIO
 * NIO is hard to use. Especially, ByteBuffer
 
+### Async/Sync & Blocking/Non-blocking IO
+* https://www.ibm.com/developerworks/linux/library/l-async/
+* Zero Copy: https://www.ibm.com/developerworks/library/j-zerocopy/ 
 ## Quetions
 1. What is attchment? A buffer used for BOTH of read and write.
 2. Is LT(Level Trigger) mode is the only choice. What about Edge Trigger?
-3. NIO vs AIO?
+3. NIO vs AIO?: https://www.ibm.com/developerworks/linux/library/l-async/
 
 ## Test case
 1. In telnet, Empty String
